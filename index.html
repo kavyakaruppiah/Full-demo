@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LANDiQ | Land Governance Intelligence</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i data-lucide="map" class="logo-icon"></i>
+                <h2>LANDiQ</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" data-view="overview"><i data-lucide="layout-dashboard"></i> Overview</li>
+                    <li data-view="repository"><i data-lucide="library"></i> Research Repository</li>
+                    <li data-view="ai-assistant"><i data-lucide="bot"></i> AI Research Assistant</li>
+                    <li data-view="gis"><i data-lucide="map-pinned"></i> GIS Intelligence</li>
+                    <li data-view="analytics"><i data-lucide="pie-chart"></i> Governance Analytics</li>
+                    <li data-view="simulator"><i data-lucide="sliders"></i> Policy Simulator</li>
+                    <li data-view="evidence"><i data-lucide="check-circle"></i> Evidence Dashboard</li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="demo-badge">
+                    <span class="dot pulse"></span>
+                    Demo Mode
+                </div>
+                <div class="data-status">Data Status: Connected</div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <h1>LANDiQ | Land Governance Intelligence</h1>
+                </div>
+                <div class="top-bar-right">
+                    <div class="demo-env-badge">● DEMO ENVIRONMENT</div>
+                    
+                    <select id="role-selector" class="role-selector">
+                        <option value="policymaker">Role: Policymaker</option>
+                        <option value="researcher">Role: Researcher</option>
+                    </select>
+                    
+                    <div class="icon-btn"><i data-lucide="bell"></i></div>
+                    <div class="user-profile">
+                        <div class="avatar">DU</div>
+                        <span>Demo User</span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Views Container -->
+            <div class="views-container">
+                
+                <!-- OVERVIEW VIEW -->
+                <div id="view-overview" class="view active">
+                    <div class="view-header">
+                        <h2>Land Governance Intelligence</h2>
+                        <p class="subtitle">From fragmented land data to evidence-based policy decisions.</p>
+                    </div>
+                    
+                    <div class="kpi-grid" id="kpi-grid">
+                        <!-- Populated via JS -->
+                    </div>
+                    
+                    <div class="overview-grid">
+                        <div class="card chart-card">
+                            <h3>Land Use Change</h3>
+                            <canvas id="landUseChart"></canvas>
+                        </div>
+                        
+                        <div class="card study-card">
+                            <h3>Current Study</h3>
+                            <p><strong>Madurai District — Urban Agricultural Land Conversion</strong></p>
+                            <span class="badge demo-data-badge">DEMO DATA — For prototype demonstration only.</span>
+                            
+                            <ul class="study-stats" id="study-stats">
+                                <!-- Populated via JS -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- RESEARCH REPOSITORY VIEW -->
+                <div id="view-repository" class="view">
+                    <div class="view-header">
+                        <h2>Research & Data Repository</h2>
+                    </div>
+                    
+                    <div class="search-bar-container">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" id="repo-search" placeholder="Search research, datasets, policies and case studies...">
+                        <button class="btn primary" onclick="searchRepository()">Search</button>
+                    </div>
+                    <p class="search-hint">Try searching: "Urban land-use change in Tamil Nadu"</p>
+                    
+                    <div class="repo-results" id="repo-results">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+                
+                <!-- AI RESEARCH ASSISTANT VIEW -->
+                <div id="view-ai-assistant" class="view">
+                    <div class="view-header">
+                        <h2>Ask the Land Research Assistant</h2>
+                        <p class="subtitle">Ask questions about land use, urbanization, infrastructure and policy.</p>
+                    </div>
+                    
+                    <div class="ai-container">
+                        <div class="ai-suggestions">
+                            <button class="suggestion-chip" onclick="askAi('Why is agricultural land decreasing?')">Why is agricultural land decreasing?</button>
+                            <button class="suggestion-chip" onclick="askAi('What are the major land-use changes?')">What are the major land-use changes?</button>
+                            <button class="suggestion-chip" onclick="askAi('Which areas show high urbanization?')">Which areas show high urbanization?</button>
+                            <button class="suggestion-chip" onclick="askAi('What policy interventions could reduce agricultural land conversion?')">What policy interventions could reduce agricultural land conversion?</button>
+                        </div>
+                        
+                        <div class="ai-chat-box">
+                            <div class="chat-input-area">
+                                <input type="text" id="ai-input" placeholder="Type your research question here...">
+                                <button class="btn primary" onclick="askAi(document.getElementById('ai-input').value)"><i data-lucide="send"></i></button>
+                            </div>
+                            
+                            <div class="chat-response-area" id="chat-response-area" style="display:none;">
+                                <div class="badge demo-data-badge" style="margin-bottom: 15px;">AI DEMO / RAG SIMULATION</div>
+                                <div class="ai-answer">
+                                    <h4 id="ai-q"></h4>
+                                    <p id="ai-a"></p>
+                                </div>
+                                
+                                <h3>Evidence</h3>
+                                <div class="evidence-list" id="ai-evidence-list">
+                                    <!-- Populated via JS -->
+                                </div>
+                                
+                                <div class="evidence-traceability-links">
+                                    <h4>Evidence Traceability</h4>
+                                    <div class="links">
+                                        <button class="btn outline" onclick="switchView('gis')">View GIS Evidence</button>
+                                        <button class="btn outline" onclick="switchView('repository')">View Dataset</button>
+                                        <button class="btn outline" onclick="switchView('repository')">View Research</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- GIS INTELLIGENCE VIEW -->
+                <div id="view-gis" class="view">
+                    <div class="view-header">
+                        <h2>GIS Intelligence</h2>
+                    </div>
+                    
+                    <div class="gis-container">
+                        <div class="gis-sidebar">
+                            <h3>Compare Land Use</h3>
+                            <div class="year-toggles">
+                                <button class="btn year-btn active" data-year="2025">2025</button>
+                                <button class="btn year-btn" data-year="2020">2020</button>
+                                <button class="btn year-btn" data-year="2015">2015</button>
+                            </div>
+                            
+                            <h3>Legend</h3>
+                            <ul class="legend-list">
+                                <li><span class="color-box" style="background:#4ade80;"></span> Agriculture</li>
+                                <li><span class="color-box" style="background:#f87171;"></span> Built-up</li>
+                                <li><span class="color-box" style="background:#60a5fa;"></span> Water</li>
+                                <li><span class="color-box" style="background:#facc15;"></span> Infrastructure</li>
+                                <li><span class="color-box" style="background:#c084fc;"></span> Climate Risk</li>
+                            </ul>
+                            
+                            <div class="badge demo-data-badge" style="margin-top:20px;">DEMO DATA</div>
+                        </div>
+                        <div class="gis-map" id="map"></div>
+                    </div>
+                </div>
+                
+                <!-- GOVERNANCE ANALYTICS VIEW -->
+                <div id="view-analytics" class="view">
+                    <div class="view-header">
+                        <h2>Land Governance Analytics</h2>
+                    </div>
+                    
+                    <div class="analytics-grid">
+                        <div class="card">
+                            <h3>Land Use Distribution</h3>
+                            <canvas id="distChart"></canvas>
+                        </div>
+                        <div class="card">
+                            <h3>Built-up Expansion</h3>
+                            <canvas id="expansionChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card insight-card">
+                        <h2>AI-Generated Insight</h2>
+                        <p class="insight-text">Built-up land increased in the selected study area during the analysed period, while agricultural land decreased.</p>
+                        <div class="badge demo-data-badge">Demo analytical insight</div>
+                        
+                        <div class="insight-evidence">
+                            <h4>Evidence</h4>
+                            <ul>
+                                <li>Land-use dataset</li>
+                                <li>Population dataset</li>
+                                <li>GIS infrastructure layer</li>
+                            </ul>
+                            <button class="btn outline" onclick="openEvidenceModal('insight-1')">View Evidence</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- POLICY SIMULATOR VIEW -->
+                <div id="view-simulator" class="view">
+                    <div class="view-header">
+                        <h2>Policy Scenario Simulator</h2>
+                        <p class="subtitle">Explore possible land-use outcomes under defined assumptions.</p>
+                        <div class="badge demo-data-badge">Scenario-based estimate using predefined assumptions and historical/demo spatial indicators.</div>
+                    </div>
+                    
+                    <div class="simulator-layout">
+                        <div class="simulator-controls">
+                            <div class="card">
+                                <h3>Agricultural Land Protection</h3>
+                                <p class="current-val">Current: <strong>40%</strong></p>
+                                <div class="slider-group">
+                                    <label>Proposed: <span id="val-ag">40</span>%</label>
+                                    <input type="range" id="slider-ag" min="0" max="100" value="40" oninput="document.getElementById('val-ag').innerText=this.value">
+                                </div>
+                                
+                                <h3>Development Restriction</h3>
+                                <p class="current-val">Current: <strong>20%</strong></p>
+                                <div class="slider-group">
+                                    <label>Proposed: <span id="val-dev">20</span>%</label>
+                                    <input type="range" id="slider-dev" min="0" max="100" value="20" oninput="document.getElementById('val-dev').innerText=this.value">
+                                </div>
+                                
+                                <h3>Infrastructure Expansion</h3>
+                                <p class="current-val">Current: <strong>50%</strong></p>
+                                <div class="slider-group">
+                                    <label>Proposed: <span id="val-infra">50</span>%</label>
+                                    <input type="range" id="slider-infra" min="0" max="100" value="50" oninput="document.getElementById('val-infra').innerText=this.value">
+                                </div>
+                                
+                                <button class="btn primary full-width simulate-btn" onclick="runSimulation()">RUN SIMULATION</button>
+                            </div>
+                        </div>
+                        
+                        <div class="simulator-results" id="sim-results" style="display:none;">
+                            <div class="card">
+                                <h2>Scenario Comparison</h2>
+                                
+                                <table class="sim-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Indicator</th>
+                                            <th style="text-align:right">Baseline</th>
+                                            <th style="text-align:right">Proposed</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sim-table-body">
+                                        <!-- JS -->
+                                    </tbody>
+                                </table>
+                                
+                                <div class="sim-estimates">
+                                    <div class="est-box">
+                                        <h4>Agricultural retention:</h4>
+                                        <span class="est-val positive" id="est-ag">+0%</span>
+                                    </div>
+                                    <div class="est-box">
+                                        <h4>Built-up expansion:</h4>
+                                        <span class="est-val negative" id="est-builtup">-0%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="disclaimer">
+                                    <i data-lucide="alert-triangle"></i>
+                                    <p>⚠️ These are scenario-based estimates generated from predefined demo assumptions. They are intended for decision support and do not represent official forecasts or automatic policy decisions.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- EVIDENCE DASHBOARD VIEW -->
+                <div id="view-evidence" class="view">
+                    <div class="view-header">
+                        <h2>Evidence-Based Policy View</h2>
+                        <p class="subtitle">Selected issue: <strong>Urban Agricultural Land Conversion</strong></p>
+                    </div>
+                    
+                    <div class="evidence-workflow">
+                        <div class="workflow-step">
+                            <div class="step-num">01 — Problem</div>
+                            <div class="step-content">Agricultural land conversion</div>
+                        </div>
+                        <div class="workflow-arrow">↓</div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-num">02 — Evidence</div>
+                            <div class="step-content">Research + datasets + GIS</div>
+                        </div>
+                        <div class="workflow-arrow">↓</div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-num">03 — Current Situation</div>
+                            <div class="step-content">Built-up expansion detected</div>
+                        </div>
+                        <div class="workflow-arrow">↓</div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-num">04 — Policy Options</div>
+                            <div class="step-content">Agricultural land protection, Development restrictions, Infrastructure planning</div>
+                        </div>
+                        <div class="workflow-arrow">↓</div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-num">05 — Scenario Simulation</div>
+                            <div class="step-content">Baseline vs Proposed</div>
+                        </div>
+                        <div class="workflow-arrow">↓</div>
+                        
+                        <div class="workflow-step highlight">
+                            <div class="step-num">06 — Decision Support</div>
+                            <div class="step-content">Evidence available for policymaker review</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-20">
+                        <h3>Evidence Traceability</h3>
+                        <div class="traceability-panel">
+                            <div class="trace-insight">
+                                <strong>Insight:</strong> Built-up expansion increased in the selected region.
+                            </div>
+                            <div class="trace-sources">
+                                <strong>Evidence Sources:</strong><br>
+                                📄 Research Paper<br>
+                                📊 Land-use Dataset<br>
+                                🗺️ GIS Layer<br>
+                                📑 Policy Document
+                            </div>
+                            <button class="btn outline mt-10" onclick="openEvidenceModal('final-insight')">VIEW EVIDENCE →</button>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal-overlay" id="evidenceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Evidence Details</h3>
+                <button class="close-modal" onclick="closeEvidenceModal()"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body-content">
+                <!-- JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
